@@ -28,7 +28,7 @@ app.post('/login', async (req, res) => {
   const { email, password, type } = req.body;
   try {
     await sql.connect(config);
-    const result = await sql.query`SELECT * FROM employee WHERE email = ${email} AND password = ${password} AND type = ${type}`;
+    const result = await sql.query`SELECT * FROM employee1 WHERE email = ${email} AND password = ${password} AND type = ${type}`;
     if (result.recordset.length === 0) {
       return res.status(401).json({ error: 'Invalid credentials' });
     }
@@ -36,8 +36,6 @@ app.post('/login', async (req, res) => {
   } catch (error) {
     console.error('Error logging in:', error);
     res.status(500).json({ error: 'An error occurred while logging in' });
-  } finally {
-    await sql.close();
   }
 });
 
@@ -49,8 +47,6 @@ app.get('/products', async (req, res) => {
   } catch (err) {
     console.error('Error fetching products:', err);
     res.status(500).json({ error: 'An error occurred while fetching products' });
-  } finally {
-    sql.close();
   }
 });
 
@@ -67,8 +63,6 @@ app.post('/addproducts', async (req, res) => {
   } catch (err) {
     console.error('Error adding product:', err);
     res.status(500).json({ error: 'An error occurred while adding the product' });
-  } finally {
-    sql.close();
   }
 });
 
@@ -113,7 +107,7 @@ app.post('/makeorders', async (req, res) => {
 app.get('/getemployee',async (req,res) => {
   try{
     await sql.connect(config);
-    const response = await sql.query`select * from employee`;
+    const response = await sql.query`select * from employee1`;
     res.json(response.recordset);
   }
   catch(err){
@@ -159,20 +153,6 @@ app.put('/delivery',async(req,res)=>{
     res.status(500).json({error : 'Error'});
   }
 })
-app.post('/signup', async (req, res) => {
-  const { email, name, password, phone, type } = req.body;
-  try {
-    await sql.connect(config);
-    const result = await sql.query`INSERT INTO employee (email, name, password, phone, type) VALUES (${email}, ${name}, ${password}, ${phone}, ${type})`;
-    console.log('User signed up successfully');
-    res.status(200).json({ message: 'Signup successful' });
-  } catch (error) {
-    console.error('Error signing up: ', error);
-    res.status(500).json({ error: 'An error occurred while signing up' });
-  } finally {
-    await sql.close();
-  }
-});
 
 app.get('/products/filter', async (req, res) => {
   try {
@@ -192,8 +172,6 @@ app.get('/products/filter', async (req, res) => {
   } catch (err) {
     console.error('Error filtering products:', err);
     res.status(500).send('An error occurred while filtering products');
-  } finally {
-    sql.close();
   }
 });
 
@@ -201,7 +179,7 @@ app.post('/addemployee', async (req, res) => {
   const { email, name, password, phone, type } = req.body;
   try {
     await sql.connect(config);
-    const result = await sql.query`INSERT INTO employee (email, name, password, phone, type) VALUES (${email}, ${name}, ${password}, ${phone}, ${type})`;
+    const result = await sql.query`INSERT INTO employee1 (email, name, password, phone, type) VALUES (${email}, ${name}, ${password}, ${phone}, ${type})`;
     console.log('Employee added successfully');
     res.status(201).json({ message: 'Employee added successfully' });
   } catch (error) {
@@ -225,14 +203,13 @@ app.put('/products/:productId', async (req, res) => {
   } catch (error) {
     console.error('Error updating product:', error);
     res.status(500).json({ error: 'An error occurred while updating the product' });
-  } finally {
-    await sql.close();
   }
 });
 
 app.get('/filteredorders', async (req, res) => {
   try {
     const { status } = req.query;
+    console.log(status);
     let query = 'SELECT * FROM orders';
     const values = [];
     if (status) {
@@ -248,8 +225,6 @@ app.get('/filteredorders', async (req, res) => {
   } catch (error) {
     console.error('Error fetching filtered orders:', error);
     res.status(500).json({ error: 'An error occurred while fetching filtered orders' });
-  } finally {
-    sql.close();
   }
 });
 
