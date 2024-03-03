@@ -22,7 +22,7 @@ var config = {
 app.use(cors());
 app.use(body.json());
 app.use(express.json());
-const port = process.env.port || 5000;
+const port = process.env.PORT || 5000;
 
 app.post('/login', async (req, res) => {
   const { email, password, type } = req.body;
