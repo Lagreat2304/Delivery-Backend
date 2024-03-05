@@ -1,6 +1,7 @@
 const express = require("express");
 const cors = require("cors");
 const body = require("body-parser");
+const jwt = require('jsonwebtoken');
 const app = express();
 const sql = require("mssql");
 
@@ -32,7 +33,14 @@ app.post('/login', async (req, res) => {
     if (result.recordset.length === 0) {
       return res.status(401).json({ error: 'Invalid credentials' });
     }
-    res.status(200).json({ message: 'Login successful',usertype : type });
+    const tokenPayload = {
+      userId: result.recordset[0].id, 
+      email: email,
+      userType: type 
+    };
+    const token = jwt.sign(tokenPayload, process.env.JWT_SECRET, { expiresIn: '1h' });
+    console.log(type,token);
+    res.status(200).json({ message: 'Login successful', token: token,type : type,email:email});
   } catch (error) {
     console.error('Error logging in:', error);
     res.status(500).json({ error: 'An error occurred while logging in' });
